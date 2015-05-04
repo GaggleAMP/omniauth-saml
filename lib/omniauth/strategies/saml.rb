@@ -39,18 +39,18 @@ module OmniAuth
           options.idp_cert_fingerprint = fingerprint_exists
         end
 
-        response = OneLogin::RubySaml::Response.new(request.params['SAMLResponse'], options)
-        response.settings = OneLogin::RubySaml::Settings.new(options)
-        response.attributes['fingerprint'] = options.idp_cert_fingerprint
+        @response = OneLogin::RubySaml::Response.new(request.params['SAMLResponse'], options)
+        @response.settings = OneLogin::RubySaml::Settings.new(options)
+        @response.attributes['fingerprint'] = options.idp_cert_fingerprint
 
-        @name_id = response.name_id
-        @attributes = response.attributes
+        @name_id = @response.name_id
+        @attributes = @response.attributes
 
         if @name_id.nil? || @name_id.empty?
           raise OmniAuth::Strategies::SAML::ValidationError.new("SAML response missing 'name_id'")
         end
 
-        response.validate!
+        @response.validate!
 
         super
       rescue OmniAuth::Strategies::SAML::ValidationError
@@ -89,6 +89,7 @@ module OmniAuth
 
       info do
         {
+          :issuer => @response.issuer,
           :name  => @attributes[:name],
           :email => @attributes[:email] || @attributes[:mail],
           :first_name => @attributes[:first_name] || @attributes[:firstname] || @attributes[:firstName],

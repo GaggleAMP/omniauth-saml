@@ -74,6 +74,16 @@ describe OmniAuth::Strategies::SAML, :type => :strategy do
         auth_hash['uid'].should == '_1f6fcf6be5e13b08b1e3610e7ff59f205fbd814f23'
       end
 
+      it 'should set the info attributes' do
+        auth_hash['info'].to_h.should == {
+          'name'  => nil,
+          'email' => 'user@example.com',
+          'first_name' => 'Rajiv',
+          'last_name' => 'Manglani',
+          'issuer' => 'http://localhost:9000/saml2/idp/metadata.php'
+        }
+      end
+
       it "should set the raw info to all attributes" do
         auth_hash['extra']['raw_info'].to_h.should == {
           'first_name'   => ['Rajiv'],
